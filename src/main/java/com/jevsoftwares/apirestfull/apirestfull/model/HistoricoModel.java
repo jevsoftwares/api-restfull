@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import java.util.Comparator;
 
 @Entity(name = "historico")
-public class HistoricoModel implements Comparator<HistoricoModel> {
+public class HistoricoModel  {
 
     @Id
     public int id;
@@ -126,18 +126,21 @@ public class HistoricoModel implements Comparator<HistoricoModel> {
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
-
+/*
     @Override
     public int compare(HistoricoModel o1, HistoricoModel o2) {
-        int id1 = o1.getId_prod();
-        int id2 = o2.getId_prod();
+        int order1 = o1.getId();
+        int order2 = o2.getId();
 
-        if (id1 > id2){
+        if (order1 > order2){
             return 1;
-        }else  if (id1 < id2){
+        }else  if (order1 < order2){
             return -1;
         }else {
             return 0;
         }
+
+        return o1.getUsuario().compareTo(o2.getUsuario());
     }
+    */
 }

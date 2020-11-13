@@ -359,10 +359,32 @@ public class ArmazemController {
             }
 
         }
-        Collections.sort(list, new HistoricoModel());
+
+        if (!order.isEmpty())
+            ArmazemController.ordenacaoString(order,list);
 
         return  list;
 
+    }
+
+    private static void ordenacaoString(String order, LinkedList list) {
+        Collections.sort(list, new Comparator<HistoricoModel>() {
+            public int compare(HistoricoModel p1, HistoricoModel p2) {
+
+                switch (order) {
+                    case "secao":
+                        return p1.getSecao().compareTo(p2.getSecao());
+                    case "data_alt":
+                        return p1.getData_alt().compareTo(p2.getData_alt());
+                    case "usuario":
+                        return p1.getUsuario().compareTo(p2.getUsuario());
+                }
+                return 0;
+            }
+        });
+
+
+//        Collections.sort(list, new HistoricoModel());
     }
     /*
   public static void gravaLog(String info) {

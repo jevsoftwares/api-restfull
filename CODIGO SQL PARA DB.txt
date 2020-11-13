@@ -1,0 +1,120 @@
+CREATE DATABASE db_miltec_desafio
+
+
+CREATE TABLE armazem(
+	id INT PRIMARY KEY,
+	codigo VARCHAR(6),
+	descricao VARCHAR(60),
+	saldo FLOAT,
+	alcoolico VARCHAR(1),
+ 	secao VARCHAR(1))
+
+CREATE TABLE historico(
+	id INT PRIMARY KEY,
+	id_prod INT,
+	codigo VARCHAR(6),
+	descricao VARCHAR(60),
+	entrada FLOAT,
+	saida FLOAT,
+	alcoolico VARCHAR(1),
+	secao VARCHAR(1),
+	data_alt VARCHAR(10),
+	hora_alt VARCHAR(8),
+	usuario VARCHAR(60)
+	)
+
+
+INSERT INTO armazem(id,codigo,descricao,saldo,alcoolico,secao) VALUES(1,'000001','REFRIGERANTE',500,'A',1)
+
+
+sql135.main-hosting.eu
+
+
+31.170.161.1
+
+
+	<servlet>
+		<servlet-name>Jersey Rest Service</servlet-name>
+		<servlet-class>org.glassfish.jersey.serverlet.ServerletContainer</servlet-class>
+		<init-param>
+			<param-mame>jersey.config.server.provider.packages</param-mame>
+			<param-value>br.jevsoftwares.rest</param-value>
+		</init-param>
+		<init-param>
+			<param-mame>com.sun.jersey.api.json.POJOMappingFeature</param-mame>
+			<param-value>true</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-mapping>Jersey REST Service</servlet-mapping>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+
+
+
+
+
+
+  <dependencies>
+			<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.bundles/project -->
+<!-- 	<dependency>
+		    <groupId>org.glassfish.jersey.bundles</groupId>
+		    <artifactId>project</artifactId>
+		    <version>2.32</version>
+		    <type>pom</type>
+		</dependency>
+-->		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.containers/jersey-container-servlet -->
+<!--		<dependency>
+		    <groupId>org.glassfish.jersey.containers</groupId>
+		    <artifactId>jersey-container-servlet</artifactId>
+		    <version>2.32</version>
+		</dependency>
+-->
+<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-server -->
+<dependency>
+    <groupId>org.glassfish.jersey.core</groupId>
+    <artifactId>jersey-server</artifactId>
+    <version>2.32</version>
+</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+	    <version>2.32</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.containers/jersey-container-servlet-core -->
+		<dependency>
+		    <groupId>org.glassfish.jersey.containers</groupId>
+		    <artifactId>jersey-container-servlet-core</artifactId>
+		    <version>2.32</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.containers/jersey-container-servlet-core -->
+		<dependency>
+		    <groupId>org.glassfish.jersey.media</groupId>
+		    <artifactId>jersey-media-moxy</artifactId>
+		    <version>2.32</version>
+		</dependency>
+				
+			<!-- https://mvnrepository.com/artifact/org.testifyproject.resources/hsql -->
+		<dependency>
+		    <groupId>org.testifyproject.resources</groupId>
+		    <artifactId>hsql</artifactId>
+		    <version>0.9.5</version>
+		    <scope>test</scope>
+		</dependency>
+	  		<!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+		<dependency>
+		    <groupId>com.h2database</groupId>
+		    <artifactId>h2</artifactId>
+		    <version>1.4.200</version>
+		    <scope>test</scope>
+		</dependency>
+			 <!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
+		<dependency>
+		    <groupId>javax.ws.rs</groupId>
+		    <artifactId>javax.ws.rs-api</artifactId>
+		    <version>2.1.1</version>
+		</dependency>
+					  
+  
+  </dependencies>
