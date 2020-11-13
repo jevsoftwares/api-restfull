@@ -106,8 +106,11 @@ public class StatusController {
         float[]     secaoQtd    = new float[6]; //STRING CORRESPONDENTE AO ARMAZEM  DE 1 A 5 INGNORANDO O ÍNDICE 0
         String[]    secaoTipo   = new String[6]; //STRING CORRESPONDENTE AO ARMAZEM  DE 1 A 5 INGNORANDO O ÍNDICE 0
 
-        if (Integer.parseInt(armazemModel.getSecao()) > (secaoTipo.length - 1 ))
+        if (Integer.parseInt(armazemModel.getSecao()) > (secaoTipo.length - 1 ) || Integer.parseInt(armazemModel.getSecao()) < 1 )
             return "Erro: A seção deve obrigatóriamente ser de 1 a 5!";
+
+        if (armazemModel.getSaldo() <= 0)
+            return "Erro: A quantidade do produto deve ser maior que zero!";
 
         for (ArmazemModel soma : repository.findAll()) {
 
