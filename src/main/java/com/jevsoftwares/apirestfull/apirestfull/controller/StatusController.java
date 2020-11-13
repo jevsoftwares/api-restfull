@@ -103,8 +103,8 @@ public class StatusController {
     @PostMapping(path = "api/armazem/salvar")
     public String salvar(@RequestBody ArmazemModel armazemModel){
         String      retorno     = "";
-        float[]     secaoQtd    = new float[6];
-        String[]    secaoTipo   = new String[6];
+        float[]     secaoQtd    = new float[6]; //STRING CORRESPONDENTE AO ARMAZEM  DE 1 A 5 INGNORANDO O ÍNDICE 0
+        String[]    secaoTipo   = new String[6]; //STRING CORRESPONDENTE AO ARMAZEM  DE 1 A 5 INGNORANDO O ÍNDICE 0
 
         if (Integer.parseInt(armazemModel.getSecao()) > (secaoTipo.length - 1 ))
             return "Erro: A seção deve obrigatóriamente ser de 1 a 5!";
@@ -116,13 +116,17 @@ public class StatusController {
                 secaoQtd[Integer.parseInt(soma.getSecao())]     = secaoQtd[Integer.parseInt(soma.getSecao())] + soma.getSaldo(); //IGNORADO O ÍNDICE 0 DO ARRAY PARA 5 SEÇÃO
                 secaoTipo[Integer.parseInt(soma.getSecao())]    = soma.getAlcoolico(); //IGNORADO O ÍNDICE 0 DO ARRAY PARA 5 SEÇÃO
 
+                if (soma.getSecao().equals(armazemModel.getSecao()) && !soma.getAlcoolico().equals(armazemModel.getAlcoolico()))
+                    return "Erro: Seção não disponível para produto " + (armazemModel.getAlcoolico().equals("A") ? "alcoolico" : "não alcoolico.");
+
             }
 
+
         if (armazemModel.getAlcoolico().equals("A") && secaoQtd[Integer.parseInt(armazemModel.getSecao())] + armazemModel.getSaldo() > 500) //NÃO PODE SER MAIS QUE 500 LITROS PARA ALCOOLICO
-            return "Erro: Limite de capacidade do estoque por seção atingido. A capacidade disponível é de "+ (secaoQtd[Integer.parseInt(armazemModel.getSecao())] - armazemModel.getSaldo());
-        else if (armazemModel.getAlcoolico().equals("N") && secaoQtd[Integer.parseInt(armazemModel.getSecao())] + armazemModel.getSaldo() > 400) //NÃO PODE SER MAIS QUE 400 LITROS PARA ALCOOLICO
-            return "Erro: Limite de capacidade do estoque por seção atingido. A capacidade disponível é de "+ (secaoQtd[Integer.parseInt(armazemModel.getSecao())] - armazemModel.getSaldo());
-        else if (!armazemModel.getAlcoolico().contains("N") || !armazemModel.getAlcoolico().contains("A"))
+            return "Erro: Limite de capacidade do estoque por seção atingido. A capacidade disponível é de "+ (500 - secaoQtd[Integer.parseInt(armazemModel.getSecao())] ) + ", portanto faltam " +(armazemModel.getSaldo() - (500 - secaoQtd[Integer.parseInt(armazemModel.getSecao())] ) ) + " para alocar o produto!";
+        else if (armazemModel.getAlcoolico().equals("N") && secaoQtd[Integer.parseInt(armazemModel.getSecao())] + armazemModel.getSaldo() > 400) //NÃO PODE SER MAIS QUE 400 LITROS PARA NÃO ALCOOLICO
+            return "Erro: Limite de capacidade do estoque por seção atingido. A capacidade disponível é de "+ (400 - secaoQtd[Integer.parseInt(armazemModel.getSecao())] ) + ", portanto faltam " +(armazemModel.getSaldo() - (400 - secaoQtd[Integer.parseInt(armazemModel.getSecao())] ) ) + " para alocar o produto!";
+        else if (!armazemModel.getAlcoolico().contains("N") && !armazemModel.getAlcoolico().contains("A"))
             return "Erro: Informar A para alcoolico e N para não alcoolico.";
 
             //ALTERAÇÃO
