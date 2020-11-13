@@ -3,9 +3,10 @@ package com.jevsoftwares.apirestfull.apirestfull.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Comparator;
 
 @Entity(name = "armazem")
-public class ArmazemModel implements Comparable<ArmazemModel> {
+public class ArmazemModel implements Comparator<ArmazemModel> {
 
     @Id
     public int id;
@@ -69,14 +70,16 @@ public class ArmazemModel implements Comparable<ArmazemModel> {
     public void setSecao(String secao) { this.secao = secao; }
 
     @Override
-    public int compareTo(ArmazemModel armazemModel) {
+    public int compare(ArmazemModel o1, ArmazemModel o2) {
+        int id1 = o1.getId();
+        int id2 = o2.getId();
 
-        if (this.id > armazemModel.getId()){
-            return -1;
-        }if (this.id < armazemModel.getId()){
+        if (id1 > id2){
             return 1;
+        }else  if (id1 < id2){
+            return -1;
+        }else {
+            return 0;
         }
-        return 0;
-
     }
 }

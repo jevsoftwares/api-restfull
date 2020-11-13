@@ -1,20 +1,20 @@
 package com.jevsoftwares.apirestfull.apirestfull.controller;
 
-import ch.qos.logback.core.joran.action.IADataForComplexProperty;
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.jevsoftwares.apirestfull.apirestfull.model.ArmazemModel;
 import com.jevsoftwares.apirestfull.apirestfull.repository.ArmazemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 @RestController
 public class StatusController {
 
     @Autowired
     private ArmazemRepository repository;
+    private Object ArmazemModel;
 
     @GetMapping(path = "api/status")
     public String check(){
@@ -34,30 +34,68 @@ public class StatusController {
     }
 
     @RequestMapping(value = "/api/armazem/{expressao}")
-    public ResponseEntity consultar(@PathVariable("expressao") String expressao ){
-        int id, auxiliarI = 0,auxiliarF = 0;
-        String alcoolico,secao;
-        float saldo;
-        int corteSubstring;
+    public LinkedList consultar(@PathVariable("expressao") String expressao ){
+        int id = 0;
+        String descricao = null, alcoolico = null,secao = null, all = null, order = null;
+        float saldo = 0;
 
-        geraVariaveis(expressao);
+        String[][] arrayParams = geraVariaveis(expressao);
 
-        auxiliarF = expressao.indexOf("=");
-        auxiliarF   = expressao.substring(auxiliarI).indexOf(",")+1;
-        id          = expressao.substring(0,auxiliarF).equalsIgnoreCase("id") ?
-                Integer.parseInt(expressao.substring(expressao.indexOf("=")+1,expressao.indexOf(","))) : 0;
+        for (String[] string :arrayParams ) {
 
-        auxiliarI    = expressao.substring(auxiliarF).indexOf("=");
-        auxiliarF   = expressao.substring(auxiliarI).indexOf(",")+2;
-        alcoolico   = expressao.substring(auxiliarI,auxiliarF) == "alcoolico"?
-                expressao.substring(expressao.substring(auxiliarF).indexOf("=")+1,expressao.substring(auxiliarF).indexOf(",")) : "";
+            if (string[1] != null ){
 
-        secao   = expressao.substring(0,expressao.indexOf("=")) == "secao"?
-                expressao.substring(expressao.substring(auxiliarF).indexOf("=")+1,expressao.substring(auxiliarF).indexOf(",")) : "";
+                switch (string[1]){
+                    case "id":
+                        id = Integer.parseInt(string[2]);
+                        break;
+                    case "alcoolico":
+                        alcoolico = string[2];
+                        break;
+                    case "descricao":
+                        descricao = string[2];
+                        break;
+                    case "secao":
+                        secao = string[2];
+                        break;
+                    case "saldo":
+                        saldo = Float.parseFloat(string[2]);
+                        break;
+                    case "order":
+                        order = string[2];
+                        break;
+                }
 
-        repository = repository;
+            }
+        }
 
-        return (ResponseEntity) repository.findAll();
+        LinkedList<ArmazemModel> list = new LinkedList<>();
+
+        for (ArmazemModel armazemModel : repository.findAll()) {
+
+            if ((id != 0 && armazemModel.getId() == id)
+                    || ( secao != null && armazemModel.getSecao().equals(secao) )
+                    || ( alcoolico != null && armazemModel.getAlcoolico().equals(alcoolico) )
+                    || ( descricao != null && armazemModel.getDescricao().contains(descricao) )){
+
+                list.add(armazemModel);
+
+            }
+
+        }
+        if (list.isEmpty()){
+
+            for (ArmazemModel armazemModel : repository.findAll()) {
+
+                list.add(armazemModel);
+
+            }
+
+        }
+        Collections.sort(list, new ArmazemModel());
+
+        return  list;
+
     }
 
     /********* GRAVAR / ALTERAR ***********/
@@ -80,9 +118,9 @@ public class StatusController {
 
             }
 
-        if (armazemModel.getAlcoolico() == "A" && secaoQtd[Integer.parseInt(armazemModel.getSecao())] + armazemModel.getSaldo() > 500) //NÃO PODE SER MAIS QUE 500 LITROS PARA ALCOOLICO
+        if (armazemModel.getAlcoolico().equals("A") && secaoQtd[Integer.parseInt(armazemModel.getSecao())] + armazemModel.getSaldo() > 500) //NÃO PODE SER MAIS QUE 500 LITROS PARA ALCOOLICO
             return "Erro: Limite de capacidade do estoque por seção atingido. A capacidade disponível é de "+ (secaoQtd[Integer.parseInt(armazemModel.getSecao())] - armazemModel.getSaldo());
-        else if (armazemModel.getAlcoolico() == "N" && secaoQtd[Integer.parseInt(armazemModel.getSecao())] + armazemModel.getSaldo() > 400) //NÃO PODE SER MAIS QUE 400 LITROS PARA ALCOOLICO
+        else if (armazemModel.getAlcoolico().equals("N") && secaoQtd[Integer.parseInt(armazemModel.getSecao())] + armazemModel.getSaldo() > 400) //NÃO PODE SER MAIS QUE 400 LITROS PARA ALCOOLICO
             return "Erro: Limite de capacidade do estoque por seção atingido. A capacidade disponível é de "+ (secaoQtd[Integer.parseInt(armazemModel.getSecao())] - armazemModel.getSaldo());
         else if (!armazemModel.getAlcoolico().contains("N") || !armazemModel.getAlcoolico().contains("A"))
             return "Erro: Informar A para alcoolico e N para não alcoolico.";
@@ -104,21 +142,32 @@ public class StatusController {
         return retorno;
     }
 
-    public static String[] geraVariaveis(String expressao){
-        String[] retorno = {};
+    public static String[][] geraVariaveis(String expressao){
+        String[][] retorno = {};
         int posicao = 0;
-        int indice = 0;
+        int indiceR = 0; //REFERENCIA
+        int indiceV = 1; //VALOR
 
-        while (posicao < expressao.length())
+        retorno = new String[expressao.length()][expressao.length()];
 
-            if (expressao.substring(posicao,posicao+1) == "=")
-                indice++;
-            else if (expressao.substring(posicao,posicao+1) == ",")
-                indice++;
-            else
-                retorno[indice] = retorno[indice] + expressao.substring(posicao,posicao+1);
+        while (posicao < expressao.length()){
+            if (expressao.substring(posicao,posicao+1).equals("=")){
+                indiceV++;
+            }
+            else if (expressao.substring(posicao,posicao+1).equals(",")){
+                indiceR++;
+                indiceV = 1;
+            }
+            else{
+                if (retorno[indiceR][indiceV] == null)
+                    retorno[indiceR][indiceV] = "";
+                retorno[indiceR][indiceV] +=  expressao.substring(posicao,posicao+1);
+            }
 
-                posicao++;
+            posicao++;
+        }
+
+
         return retorno;
     }
 
